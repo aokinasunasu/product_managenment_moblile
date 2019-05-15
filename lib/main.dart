@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(new MyApp());
 
@@ -47,6 +48,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('商品リスト'),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.search), onPressed: () {
+            Fluttertoast.showToast(
+                msg: "Unimplemented",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIos: 1,
+                backgroundColor: Colors.blue,
+                textColor: Colors.black,
+                fontSize: 16.0
+            );
+          },)
+        ],
       ),
       body: new ListView.builder(
         itemCount: data == null ? 0 : data.length,
