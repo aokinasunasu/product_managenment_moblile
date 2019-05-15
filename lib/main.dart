@@ -41,35 +41,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future codeRequest(String code) async {
-      var response = await http
-        .get(Uri.encodeFull(baseUrl + '/api/product/code/show?code=' + code), headers: {"Accept": "application/json"});
-      if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        Navigator.push(
-          context,
-          new MaterialPageRoute(
-          builder: (BuildContext context) =>
-          new ProductShowPage(data)));
-      } else if (response.statusCode == 404) {
-          tostMessage('商品が見つかりません');
-          Navigator.push(
-          context,
-          new MaterialPageRoute(
-          builder: (BuildContext context) =>
-          new ProductCreatePage(code)));
-      }
+    var response = await http
+      .get(Uri.encodeFull(baseUrl + '/api/product/code/show?code=' + code), headers: {"Accept": "application/json"});
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      Navigator.push(
+        context,
+        new MaterialPageRoute(
+        builder: (BuildContext context) =>
+        new ProductShowPage(data)));
+    } else if (response.statusCode == 404) {
+      tostMessage('商品が見つかりません');
+      Navigator.push(
+      context,
+      new MaterialPageRoute(
+      builder: (BuildContext context) =>
+      new ProductCreatePage(code)));
+    }
   }
 
-  Future _scanQR() async{
+  Future _scanQR() async {
     try {
       String qrResult = await BarcodeScanner.scan();
       tostMessage(qrResult);
       codeRequest(qrResult);
-      setState(() {
-        // result = qrResult;
-        // qrResult.codeUnits;
-        // listItem.add(qrResult);
-      });
     } on PlatformException catch (ex) {
       // 不許可
       if(ex.code == BarcodeScanner.CameraAccessDenied) {
@@ -187,20 +182,6 @@ class ProductShowPage extends StatelessWidget {
                 child: ListTile(
                   title: Text(data['unit_selling_price'] + '円'),
                   leading: Icon(Icons.add_shopping_cart),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: ListTile(
-                  title: Text(data['created_at']),
-                  leading: Icon(Icons.create),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: ListTile(
-                  title: Text(data['created_at']),
-                  leading: Icon(Icons.update),
                 ),
               ),
             ],
