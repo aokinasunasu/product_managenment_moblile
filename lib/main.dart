@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(new MyApp());
 
@@ -38,6 +38,47 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future _scanQR() async{
+    try {
+      String qrResult = await BarcodeScanner.scan();
+      tostMessage(qrResult);
+      setState(() {
+        // result = qrResult;
+        // qrResult.codeUnits;
+        // listItem.add(qrResult);
+      });
+    } on PlatformException catch (ex) {
+      // 不許可
+      if(ex.code == BarcodeScanner.CameraAccessDenied) {
+        setState(() {
+          tostMessage('Camera Permission was denisd');
+        });
+      } else {
+        setState(() {
+          tostMessage('Unknown Error $ex');
+        });
+      }
+    } on FormatException {
+      setState(() {
+        tostMessage('読み取り形式エラー');
+      });
+    } catch (ex) {
+      setState(() {
+        tostMessage('Unknown Error $ex');
+      });
+    }
+  }
+
+  void tostMessage(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIos: 1,
+      fontSize: 16.0
+    );
+  }
+
   @override
   void initState() {
     this.makeRequest();
@@ -50,15 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text('商品リスト'),
         actions: <Widget>[
           IconButton(icon: Icon(Icons.search), onPressed: () {
-            Fluttertoast.showToast(
-                msg: "Unimplemented",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIos: 1,
-                backgroundColor: Colors.blue,
-                textColor: Colors.black,
-                fontSize: 16.0
-            );
+            tostMessage('not implemented');
           },)
         ],
       ),
@@ -84,7 +117,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         }
-      )
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        icon:Icon(Icons.camera_alt),
+        label: Text("Scan"),
+        onPressed: _scanQR,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
