@@ -24,11 +24,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String url = 'http://192.168.100.20:8000//api/product';
+  final String baseUrl = 'http://192.168.100.20:8000';
+  // String makeUrl = ba;
+
   List data;
   Future<String> makeRequest() async {
     var response = await http
-        .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
+        .get(Uri.encodeFull(baseUrl + '/api/product'), headers: {"Accept": "application/json"});
 
     setState(() {
       print(response);
@@ -38,10 +40,28 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<String> codeRequest(String code) async {
+      var response = await http
+        .get(Uri.encodeFull(baseUrl + '/api/product/code/show?code=' + code), headers: {"Accept": "application/json"});
+      print(baseUrl + '/api/product/code/show?code=' + code);
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+          builder: (BuildContext context) =>
+          new SecondPage(data)));
+      } else if (response.statusCode == 404) {
+          tostMessage('商品が見つかりません');
+      }
+  }
+
   Future _scanQR() async{
     try {
       String qrResult = await BarcodeScanner.scan();
       tostMessage(qrResult);
+      codeRequest(qrResult);
       setState(() {
         // result = qrResult;
         // qrResult.codeUnits;
@@ -68,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
   }
-
+  
   void tostMessage(String message) {
     Fluttertoast.showToast(
       msg: message,
