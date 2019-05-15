@@ -7,6 +7,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 
 void main() => runApp(new MyApp());
+final String baseUrl = 'http://192.168.100.20:8000';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -24,11 +25,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final String baseUrl = 'http://192.168.100.20:8000';
   // String makeUrl = ba;
 
   List data;
-  Future<String> makeRequest() async {
+  Future makeRequest() async {
     var response = await http
         .get(Uri.encodeFull(baseUrl + '/api/product'), headers: {"Accept": "application/json"});
 
@@ -40,20 +40,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<String> codeRequest(String code) async {
+  Future codeRequest(String code) async {
       var response = await http
         .get(Uri.encodeFull(baseUrl + '/api/product/code/show?code=' + code), headers: {"Accept": "application/json"});
-      print(baseUrl + '/api/product/code/show?code=' + code);
-      print(response.statusCode);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         Navigator.push(
           context,
           new MaterialPageRoute(
           builder: (BuildContext context) =>
-          new SecondPage(data)));
+          new ProductShowPage(data)));
       } else if (response.statusCode == 404) {
           tostMessage('商品が見つかりません');
+          Navigator.push(
+          context,
+          new MaterialPageRoute(
+          builder: (BuildContext context) =>
+          new ProductCreatePage(code)));
       }
   }
 
@@ -110,8 +113,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: new Text('商品リスト'),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.search), onPressed: () {
-            tostMessage('not implemented');
+          IconButton(icon: Icon(Icons.add), onPressed: () {
+            String code = "";
+            Navigator.push(
+            context,
+            new MaterialPageRoute(
+            builder: (BuildContext context) =>
+            new ProductCreatePage(code)));
           },)
         ],
       ),
@@ -132,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 context,
                 new MaterialPageRoute(
                 builder: (BuildContext context) =>
-                new SecondPage(data[i])));
+                new ProductShowPage(data[i])));
               },
             ),
           );
@@ -148,8 +156,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class SecondPage extends StatelessWidget {
-  SecondPage(this.data);
+class ProductShowPage extends StatelessWidget {
+  ProductShowPage(this.data);
   final data;
   @override
   Widget build(BuildContext context) => new Scaffold(
@@ -157,8 +165,9 @@ class SecondPage extends StatelessWidget {
     body: new Center(
       child: new Container(
         child: Card(
-          child: Column(
+          child: Column(            
             children: <Widget>[
+              Image.network(baseUrl + '/storage/' + 'miji.jpeg'),
               Container(
                 margin: EdgeInsets.all(10.0),
                 child: ListTile(
@@ -192,6 +201,78 @@ class SecondPage extends StatelessWidget {
                 child: ListTile(
                   title: Text(data['created_at']),
                   leading: Icon(Icons.update),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    )
+  );
+}
+
+// TODO 作成ページ class分け
+class ProductCreatePage extends StatelessWidget {
+  ProductCreatePage(this.code);
+  final code;
+  @override
+  Widget build(BuildContext context) => new Scaffold(
+    appBar: new AppBar(title: new Text('商品作成(実装中)')),
+    body: new Center(
+      child: new Container(
+        child: Card(
+          child: Column(            
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.all(10.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    icon: const Icon(Icons.card_travel),
+                    hintText: 'code',
+                    labelText: 'code',
+                  ),
+                  enabled: false,
+                  // 初期値
+                  initialValue: code,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(10.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                  icon: const Icon(Icons.perm_identity),
+                  hintText: '商品名',
+                  labelText: '商品名',
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(10.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                  icon: const Icon(Icons.add_shopping_cart),
+                  hintText: '金額',
+                  labelText: '金額',
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(10.0),
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  ),
+                  onPressed: (){
+                    Fluttertoast.showToast(
+                      msg: '実装中',
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIos: 1,
+                      fontSize: 16.0
+                    );
+                  },
+                  color: Colors.blue,
+                  child: Text('保存'),
                 ),
               ),
             ],
