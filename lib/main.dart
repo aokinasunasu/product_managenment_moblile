@@ -158,11 +158,11 @@ class ProductShowPage extends StatelessWidget {
   Widget build(BuildContext context) => new Scaffold(
     appBar: new AppBar(title: new Text('商品詳細ページ')),
     body: new Center(
-      child: new Container(
+      child: new SingleChildScrollView(
         child: Card(
           child: Column(            
             children: <Widget>[
-              Image.network(baseUrl + '/storage/' + 'miji.jpeg'),
+              Image.network(baseUrl + '/storage/' + data['picture']),
               Container(
                 margin: EdgeInsets.all(10.0),
                 child: ListTile(
@@ -182,6 +182,20 @@ class ProductShowPage extends StatelessWidget {
                 child: ListTile(
                   title: Text(data['unit_selling_price'] + '円'),
                   leading: Icon(Icons.add_shopping_cart),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(10.0),
+                child: ListTile(
+                  title: Text(data['created_at']),
+                  leading: Icon(Icons.create),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(10.0),
+                child: ListTile(
+                  title: Text(data['updated_at']),
+                  leading: Icon(Icons.update),
                 ),
               ),
             ],
