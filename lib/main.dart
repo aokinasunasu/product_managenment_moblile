@@ -53,10 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (response.statusCode == 404) {
       tostMessage('商品が見つかりません');
       Navigator.push(
-      context,
-      new MaterialPageRoute(
-      builder: (BuildContext context) =>
-      new ProductCreatePage(code)));
+        context, 
+        MaterialPageRoute(builder: (context) => ProductCreateScreen(code)),
+      );
     }
   }
 
@@ -114,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
             context,
             new MaterialPageRoute(
             builder: (BuildContext context) =>
-            new ProductCreatePage(code)));
+            new ProductCreateScreen(code)));
           },)
         ],
       ),
@@ -206,10 +205,22 @@ class ProductShowPage extends StatelessWidget {
   );
 }
 
-// TODO 作成ページ class分け
-class ProductCreatePage extends StatelessWidget {
-  ProductCreatePage(this.code);
-  final code;
+// TODO CODE分割
+class ProductCreateScreen extends StatefulWidget {
+  ProductCreateScreen(this.code);
+  final String code;
+  @override
+  _ProductCreateState createState() => new _ProductCreateState();
+
+}
+ 
+
+class _ProductCreateState extends State<ProductCreateScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+  }
   @override
   Widget build(BuildContext context) => new Scaffold(
     appBar: new AppBar(title: new Text('商品作成(実装中)')),
@@ -228,7 +239,7 @@ class ProductCreatePage extends StatelessWidget {
                   ),
                   enabled: false,
                   // 初期値
-                  initialValue: code,
+                  initialValue: widget.code,
                 ),
               ),
               Container(
@@ -239,6 +250,7 @@ class ProductCreatePage extends StatelessWidget {
                   hintText: '商品名',
                   labelText: '商品名',
                   ),
+                  initialValue: "",
                 ),
               ),
               Container(
@@ -249,6 +261,7 @@ class ProductCreatePage extends StatelessWidget {
                   hintText: '金額',
                   labelText: '金額',
                   ),
+                  initialValue: "0",
                 ),
               ),
               Container(
