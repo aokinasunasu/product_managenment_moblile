@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-// TODO CODE分割
 class ProductCreateScreen extends StatefulWidget {
   ProductCreateScreen(this.code);
   final String code;
@@ -10,77 +10,102 @@ class ProductCreateScreen extends StatefulWidget {
 
 }
  
+class _FormData {
+  String code = "";
+  String name = "";
+  String price = "";
+  DateTime date = DateTime.now();
+}
 
 class _ProductCreateState extends State<ProductCreateScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _FormData _data = _FormData();
+
   @override
   void initState() {
     super.initState();
-
+    _data.code = widget.code;
   }
   @override
   Widget build(BuildContext context) => new Scaffold(
     appBar: new AppBar(title: new Text('商品作成(実装中)')),
-    body: new Center(
-      child: new Container(
-        child: Card(
-          child: Column(            
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    icon: const Icon(Icons.card_travel),
-                    hintText: 'code',
-                    labelText: 'code',
-                  ),
-                  enabled: false,
-                  // 初期値
-                  initialValue: widget.code,
-                ),
+    body: SafeArea(
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(20.0),
+          children: <Widget>[
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: const Icon(Icons.code),
+                hintText: 'コードs',
+                labelText: 'コード',
               ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                  icon: const Icon(Icons.perm_identity),
-                  hintText: '商品名',
-                  labelText: '商品名',
-                  ),
-                  initialValue: "",
-                ),
+              onSaved: (String value){
+                _data.code = value;
+              },
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '名前は必須入力項目です';
+                }
+              },
+              //初期値
+              initialValue: _data.name,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: const Icon(Icons.person),
+                hintText: '商品名',
+                labelText: '名前',
               ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                  icon: const Icon(Icons.add_shopping_cart),
-                  hintText: '金額',
-                  labelText: '金額',
-                  ),
-                  initialValue: "0",
-                ),
+              onSaved: (String value){
+                _data.name = value;
+              },
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '名前は必須入力項目です';
+                }
+              },
+              //初期値
+              initialValue: _data.name,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                icon: const Icon(Icons.card_travel),
+                hintText: '金額',
+                labelText: '金額',
               ),
-              Container(
-                margin: EdgeInsets.all(10.0),
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  ),
-                  onPressed: (){
-                    Fluttertoast.showToast(
-                      msg: '実装中',
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIos: 1,
-                      fontSize: 16.0
-                    );
-                  },
-                  color: Colors.blue,
-                  child: Text('保存'),
-                ),
+              inputFormatters: <TextInputFormatter> [
+                WhitelistingTextInputFormatter.digitsOnly,
+              ],
+          
+              onSaved: (String value){
+                _data.price = value;
+              },
+              validator: (value) {
+                if (value.isEmpty) {
+                  return '数値は必須入力項目です';
+                }
+              },
+              //初期値
+              initialValue: _data.price,
+            ),
+            RaisedButton(
+                
+                padding: EdgeInsets.all(20.0),
+                color: Colors.lightBlue,
+                onPressed: () {
+                 if(_formKey.currentState.validate()) {
+                   _formKey.currentState.save();
+                   print('-----------');
+                   print(_data);
+                 }
+                },
+                child: Text('保存',style: TextStyle(
+                  color: Colors.white
+                ),),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     )
